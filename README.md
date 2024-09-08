@@ -35,3 +35,22 @@
 * Project should be named Project.Client  
 * Solution should be named Project.Client Solution
 * The default project has several default files: ErrorModel for client side error, Home Controller, default Views for home. BootStrap and JQuery are included and enabled by default by default
+
+### Start with Data Access Layer
+* Create a Class Library for the same solution
+* Create Folder: Models and Data
+* Inside Data create two more folders: Configuration and Context
+* From Depedencies install NuGet EntityFrameworkCore SQL server
+* Under Context create AppDbContext
+* Override OnConfiguring
+* Create the Connection String
+* Add DbSet for each Class in the Models
+* Create Configuration files for each Model
+* Implement the IEntityTypeConfiguration<> Interface
+* In AppDbContext override OnModelCreating
+* Use
+```C#
+modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+```
+to activate all Model Configuration Classes
+* 
