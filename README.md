@@ -70,4 +70,24 @@ modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 * An Object from a Class that needs an Object from another Class to be created
 * You create your dependecy injection in Program in your presentation layer
 * This means CLR can create an object from AppDbContext at any time
-* Don't forget to add reference from BLL which already has a reference from 
+* Don't forget to add reference from BLL which already has a reference from
+
+### Back to Data Access Layer
+* Create a constructor for AppDbContext
+* Use the overload with DbContextOptions
+* Edit the dependency injection of AddDbContext to insert the connection string there
+* Delete the OnCofigure
+
+### appsettings.json
+* This's the best place to keep the connection string
+* Why?
+* All the C# files will be compiled to .dll files that we won't be able to edit
+* So keep your connection string there and send the key to the AppDbContext dependency injector
+
+### To do the Migrations
+* You need to install EFCore tools in your presentation layer, where you Main() function exists
+* Choose you DAL as your default project for migrations
+```
+Add-Migration "InitialCreate" -OutputDir Data/Migrations
+```
+* The prvious line will specify the new folder that will be created
