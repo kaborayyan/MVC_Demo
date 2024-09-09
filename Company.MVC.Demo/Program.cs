@@ -1,3 +1,6 @@
+using Company.MVC.Demo.DAL.Data.Context;
+using Microsoft.EntityFrameworkCore;
+
 namespace Company.MVC.Demo
 {
     public class Program
@@ -8,6 +11,21 @@ namespace Company.MVC.Demo
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+
+            // Allow Dependency Injection for AppDbContext
+            // builder.Services.AddScoped<AppDbContext>();
+            // there are also AddSingleton and AddTransient
+
+            // ASP has a more direct method
+            // Same effect as the above code
+            // Allow Dependency Injection for AppDbContext
+            // This means CLR can create an object from AppDbContext at any time
+            // options here of type dbContextOptionBuilder
+            builder.Services.AddDbContext<AppDbContext>(options =>
+            {
+                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            });
+            
 
             var app = builder.Build();
 

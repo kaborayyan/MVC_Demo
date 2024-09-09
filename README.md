@@ -48,9 +48,26 @@
 * Create Configuration files for each Model
 * Implement the IEntityTypeConfiguration<> Interface
 * In AppDbContext override OnModelCreating
-* Use
+* Use the next code to activate all Model Configuration Classes  
 ```C#
 modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 ```
-to activate all Model Configuration Classes
-* 
+
+### Business Logic Layer
+* A Repository for each Class  
+* Create two folders Repository and Interface inside The BLL
+* Create an interface for each Model Class, the interface will carry the signatures of Methods
+* Add a reference for DAL inside the BLL
+* You have to make all your Classes public to be able to use them
+* Create an interface for each to be built Repository
+* Five Basic Methods to create their signature: GetAll(), GetById(), Create(), Update() and Delete()
+* Create a Repository Class for each Model and let it implement the already created Interface
+* Instead of opening and closing the connection each time
+* Create a private field of type AppDbContext you created before
+* You have a create a constructor to asign value to the field
+
+### Dependecy Injection
+* An Object from a Class that needs an Object from another Class to be created
+* You create your dependecy injection in Program in your presentation layer
+* This means CLR can create an object from AppDbContext at any time
+* Don't forget to add reference from BLL which already has a reference from 

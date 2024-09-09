@@ -9,8 +9,12 @@ using System.Threading.Tasks;
 
 namespace Company.MVC.Demo.DAL.Data.Context
 {
-    internal class AppDbContext : DbContext
+    public class AppDbContext : DbContext
     {
+        public AppDbContext(DbContextOptions<AppDbContext>options) : base(options)
+        {
+
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
@@ -18,10 +22,12 @@ namespace Company.MVC.Demo.DAL.Data.Context
             // Check EF codes to know more
             base.OnModelCreating(modelBuilder);
         }
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            optionsBuilder.UseSqlServer("Server = .; Database = CompanyMvcDemo; Trusted_Connection = True; TrustServerCertificate = True");            
-        }
+
+        // Look into Program.cs
+        //protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        //{
+        //    optionsBuilder.UseSqlServer("Server = .; Database = CompanyMvcDemo; Trusted_Connection = True; TrustServerCertificate = True");
+        //}
 
         public DbSet<Department> Departments { get; set; }
     }
