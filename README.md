@@ -91,3 +91,12 @@ modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 Add-Migration "InitialCreate" -OutputDir Data/Migrations
 ```
 * The prvious line will specify the new folder that will be created
+
+### Adding New Controllers
+* For each controller you add, create its default index view
+* You have to create a private field from the repository in the controller to able to use its methods
+* Modify the contructor to assign default value for the private field instead of null
+* Allow dependency injection in Program.cs for the repository class
+* The GetAll() method shoud return IEnumerable type of data
+* Move the use name space to the view import
+* Modify the _Layout view to add links to the new page

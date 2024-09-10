@@ -1,3 +1,5 @@
+using Company.MVC.Demo.BLL.Interface;
+using Company.MVC.Demo.BLL.Repository;
 using Company.MVC.Demo.DAL.Data.Context;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,6 +27,9 @@ namespace Company.MVC.Demo
             {
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
             });
+            
+            // To allow dependency injection for the repository
+            builder.Services.AddScoped<IDepartmentRepository,DepartmentRepository>();
             
 
             var app = builder.Build();
