@@ -96,7 +96,17 @@ Add-Migration "InitialCreate" -OutputDir Data/Migrations
 * For each controller you add, create its default index view
 * You have to create a private field from the repository in the controller to able to use its methods
 * Modify the contructor to assign default value for the private field instead of null
-* Allow dependency injection in Program.cs for the repository class
+* Allow dependency injection in Program.cs for the repository and its interface classes
 * The GetAll() method shoud return IEnumerable type of data
 * Move the use name space to the view import
 * Modify the _Layout view to add links to the new page
+
+### The View
+* To be able to use the incoming object from the Controller
+* Use model with lowercase m at the start of page
+```
+@model IEnumerable<Department>
+```
+* However inside the code use Model with upper case m
+* Adjust the form and use the html helpers and tag helpers
+* You can use disabled or readonly to disable the html form fields
