@@ -63,7 +63,7 @@ namespace Company.MVC.Demo.Controllers
         }
         #endregion
 
-        #region Update
+        #region Edit
         [HttpGet]
         public IActionResult Edit(int? id)
         {
@@ -74,16 +74,26 @@ namespace Company.MVC.Demo.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Department department)
+        public IActionResult Edit([FromRoute]int? id, Department department)
         {
-            if (ModelState.IsValid)
+            try
             {
-                var count = _departmentRepository.Update(department);
-                if (count > 0)
+                if (id != department.DepartmentId) return BadRequest();
+
+                if (ModelState.IsValid)
                 {
-                    return RedirectToAction(nameof(Index));
+                    var count = _departmentRepository.Update(department);
+                    if (count > 0)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
                 }
             }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+            }
+            
             return View(department);
         }
         #endregion
