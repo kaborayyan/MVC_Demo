@@ -7,18 +7,15 @@ using System.Threading.Tasks;
 
 namespace Company.MVC.Demo.BLL.Interface
 {
-    public interface IDepartmentRepository : IGenericRepository<Department>
+    public interface IEmployeeRepository:IGenericRepository<Employee>
     {
         // Original Code
-        //IEnumerable<Department> GetAll();
-        //Department Get(int id);
 
-        // Remember SaveChanges() used to return a number
-        // So each of the next methods can return a number
-
-        //int Add(Department entity);
-        //int Update(Department entity);
-        //int Delete(Department entity);
+        //IEnumerable<Employee> GetAll();
+        //Employee Get(int id);
+        //int Add(Employee entity);
+        //int Update(Employee entity);
+        //int Delete(Employee entity);
 
         // You can let the repositories implement the IGenericRepository directly
         // However it's better to leave it like this in case you needed to

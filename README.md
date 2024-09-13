@@ -111,11 +111,30 @@ Add-Migration "InitialCreate" -OutputDir Data/Migrations
 * Adjust the form and use the html helpers and tag helpers
 * You can use disabled or readonly to disable the html form fields
 
-### The Edit "Update" & Delete Methods
+### The Edit "Update" & "Delete" Methods
 * Just like the details
 * You have to create two codes for the HttpGet and HttpPost
 * Since the code is the same in the HttpGet method
 * You can call the Details() method inside the Edit() and Delete() methods
 * The view() has an overload that accept a view name, use it to redirect the result to another view
 
-### 
+### The Employee
+* Create the model
+* Create The model Configuration Class
+* Add to the DbContext
+* Create the IRepository interface then the Repository as before
+* Implement all methods
+
+### Generic Interface & Repository
+* You can let the repositories implement the IGenericRepository directly
+* However it's better to leave it like this in case you needed to add something special to each repository for example
+* For the generic repository, you have to put constraints on the data type
+* To do this create a base class model that both department and employee will inherit from it
+* Thus the repository will accept data types from any class that inherit from the base model
+* Use Set<T>() to replace the data type "Class"
+* Let each repository inherit from the Generic Repository and the corresponding interface
+
+### Employee Controller and Views
+* Follow same steps as Department
+* Write the script codes for JQuery validation in a separate section in the create html page
+* So that it will work after loading the JQuery library
