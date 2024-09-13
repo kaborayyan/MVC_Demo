@@ -13,7 +13,7 @@ namespace Company.MVC.Demo.DAL.Data.Configuration
     {
         public void Configure(EntityTypeBuilder<Department> builder)
         {
-            builder.Property(D => D.DepartmentId).UseIdentityColumn(10,10); // Start at 10, increase by 10
+            builder.Property(D => D.Id).UseIdentityColumn(10,10); // Start at 10, increase by 10
         }
     }
 }

@@ -82,7 +82,7 @@ namespace Company.MVC.Demo.Controllers
             // if someone manipulated the code on the front end
             try
             {
-                if (id != department.DepartmentId) return BadRequest();
+                if (id != department.Id) return BadRequest();
 
                 if (ModelState.IsValid)
                 {
@@ -121,7 +121,7 @@ namespace Company.MVC.Demo.Controllers
         {
             try
             {
-                if (id != department.DepartmentId) return BadRequest();
+                if (id != department.Id) return BadRequest();
 
                 if (ModelState.IsValid)
                 {

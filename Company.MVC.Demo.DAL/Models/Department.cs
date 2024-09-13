@@ -11,7 +11,7 @@ namespace Company.MVC.Demo.DAL.Models
     public class Department
     {
         [DisplayName("Id")]
-        public int DepartmentId { get; set; }
+        public int Id { get; set; }
         [Required(ErrorMessage = "Department Code Is Required")]
         [DisplayName("Code")]
         public string DepartmentCode { get; set; }
