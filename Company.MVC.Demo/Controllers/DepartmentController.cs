@@ -54,12 +54,12 @@ namespace Company.MVC.Demo.Controllers
         #endregion
 
         #region Details
-        public IActionResult Details(int? id) // Status 100
+        public IActionResult Details(int? id, string viewName = "Details") // Status 100
         {
             if (id == null) return BadRequest(); // Status 400
             var department = _departmentRepository.Get(id.Value);
             if (department == null) return NotFound(); // Status 404
-            return View(department);
+            return View(viewName, department);
         }
         #endregion
 
@@ -67,15 +67,19 @@ namespace Company.MVC.Demo.Controllers
         [HttpGet]
         public IActionResult Edit(int? id)
         {
-            if (id == null) return BadRequest();
-            var department = _departmentRepository.Get(id.Value);
-            if (department == null) return NotFound();
-            return View(department);
+            //if (id == null) return BadRequest();
+            //var department = _departmentRepository.Get(id.Value);
+            //if (department == null) return NotFound();
+            //return View(department);
+            return Details(id,"Edit");
         }
 
         [HttpPost]
-        public IActionResult Edit([FromRoute]int? id, Department department)
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit([FromRoute] int? id, Department department)
         {
+            // Requesting the entity using id from route ensures no mistakes
+            // if someone manipulated the code on the front end
             try
             {
                 if (id != department.DepartmentId) return BadRequest();
@@ -92,31 +96,49 @@ namespace Company.MVC.Demo.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+                // The error message will be viewed in a div
+                // in the view page
             }
-            
+
             return View(department);
         }
         #endregion
 
+        #region Delete
         [HttpGet]
         public IActionResult Delete(int? id)
         {
-            if (id == null) return BadRequest();
-            var department = _departmentRepository.Get(id.Value);
-            if (department == null) return NotFound();
-            return View(department);
+            //if (id == null) return BadRequest();
+            //var department = _departmentRepository.Get(id.Value);
+            //if (department == null) return NotFound();
+            //return View(department);
+            return Details(id, "Delete");
         }
 
         [HttpPost]
-        public IActionResult Delete(Department department)
+        [ValidateAntiForgeryToken]
+        public IActionResult Delete([FromRoute] int? id, Department department)
         {
-            var count = _departmentRepository.Delete(department);
-            if (count > 0)
+            try
             {
-                return RedirectToAction(nameof(Index));
+                if (id != department.DepartmentId) return BadRequest();
+
+                if (ModelState.IsValid)
+                {
+                    var count = _departmentRepository.Delete(department);
+                    if (count > 0)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
             }
 
             return View(department);
         }
+        #endregion
     }
 }

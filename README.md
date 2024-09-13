@@ -110,3 +110,12 @@ Add-Migration "InitialCreate" -OutputDir Data/Migrations
 * However inside the code use Model with upper case m
 * Adjust the form and use the html helpers and tag helpers
 * You can use disabled or readonly to disable the html form fields
+
+### The Edit "Update" & Delete Methods
+* Just like the details
+* You have to create two codes for the HttpGet and HttpPost
+* Since the code is the same in the HttpGet method
+* You can call the Details() method inside the Edit() and Delete() methods
+* The view() has an overload that accept a view name, use it to redirect the result to another view
+
+### 
