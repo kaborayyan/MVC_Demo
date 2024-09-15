@@ -1,6 +1,7 @@
 ﻿using Company.MVC.Demo.BLL.Interface;
 using Company.MVC.Demo.DAL.Data.Context;
 using Company.MVC.Demo.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +17,7 @@ namespace Company.MVC.Demo.BLL.Repository
         // _context default value is null
         // You have to create a constructor that will assign a value to _context
         // else you will get null exception once you start using the methods
-        private readonly AppDbContext _context;
+        private protected readonly AppDbContext _context;
         public GenericRepository(AppDbContext context)
         {
             _context = context;
@@ -25,8 +26,16 @@ namespace Company.MVC.Demo.BLL.Repository
         // The 5 basic methods
         public IEnumerable<T> GetAll()
         {
-            // Set<T>() instead of Department or Employee
-            return _context.Set<T>().ToList();
+            if (typeof(T) == typeof(Employee))
+            {
+                // Temporary solution to let EF load the navigation property
+                return (IEnumerable<T>)_context.Employees.Include(E => E.WorkFor).AsNoTracking().ToList();
+            }
+            else
+            {
+                // Set<T>() instead of Department or Employee
+                return _context.Set<T>().ToList();
+            }            
         }
 
         public T Get(int id)

@@ -20,5 +20,7 @@ namespace Company.MVC.Demo.BLL.Interface
         // You can let the repositories implement the IGenericRepository directly
         // However it's better to leave it like this in case you needed to
         // add something special to each repository for example
+
+        IEnumerable<Employee> GetByName(string name); // The search function
     }
 }

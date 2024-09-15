@@ -18,5 +18,7 @@ namespace Company.MVC.Demo.DAL.Models
         public string DepartmentName { get; set; }
         [DisplayName("Date Of Creation")]
         public DateTime DateOfCreation { get; set; }
+
+        public ICollection<Employee>? Employees { get; set; }
     }
 }

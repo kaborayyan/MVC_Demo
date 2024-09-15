@@ -138,3 +138,95 @@ Add-Migration "InitialCreate" -OutputDir Data/Migrations
 * Follow same steps as Department
 * Write the script codes for JQuery validation in a separate section in the create html page
 * So that it will work after loading the JQuery library
+
+### To send extra data from Action to View
+* Use View's Dictionary
+* All inherited from Controller
+* You can create a div on the frontend and display the message there
+    * ViewData - Dictionary - Require Casting
+    ```C#
+    string Message = "Hello world";
+    ViewData["Message"] = Message + "From Viewdata";
+    ```
+    * ViewBag - Dynamic
+    ```C#
+    ViewBag.Message = Message + "From ViewBag";
+    ```
+    * TempData - Dictionary - Require Casting
+    * Used to transfer data from request to another
+    ```C#
+    TempData["Message"] = Message + "From Viewdata";
+    ```
+
+### Add the relation between Department and Employees
+* The department will have a ICollection property of The employee
+* The employee will have property of type Department
+* Better to do it through Data Annotation or Class Configuration
+* Go to the Create view and add the needed input
+* For this you need the Controller to accept data from Department Repository
+* Add it as a private field and to the constructor
+* Modify the Create and Edit method to display the departments
+* Use ViewData to send the extra data to the View "To the partial view"
+* Modify the Index view to add the new field
+* EF doesn't load any navigational property by default
+* So modify the repository to load the navigation property
+
+### To add a Search Function
+* First add it to the target IRepository
+* Modify the Repository and implement the new changes
+* Modify the private property in the Generic Repository to private protected to be able to use it in the inherited Classes
+* Modify the Index Action in the Employee Controller to implement the function
+* Remove the HttpGet since the action will act as Get and Post
+* Modify the Index view and put the needed fields
+
+### About Dependecy Injection
+* Dependency Injection is to allow CLR to create Object from any Class and inject it to another Class
+* We have three Methods
+```C#
+// In Program.cs
+builder.Services.AddScoped
+builder.Services.AddTransient
+builder.Services.AddSingleton
+```
+* The difference is how long the object will stay in the memory
+    * AddScoped: lifetime per request
+    * AddTransient: lifetime per operation
+    * AddSingleton: lifetime per application
+* Look into folder Services in the presentation services to check created Interfaces and Classes for testing
+* Go to the home controller and modify the constructor
+* Go to Program.cs and do the necessary dependency injections
+* Run the app and check the differences
+    * Singleton is the same since the app is running
+    * Transient both variables guid are different will create many objects as you need
+    * Scoped are the same object whatever how many objects you ask
+* DbContext and Repository are best with Scoped
+* Cashing is better with Singleton
+
+### ViewModel
+* Not all the data in the database need to be sent to the view
+* To avoid sending sensitive data you use a ViewModel as a bridge between the model "the database" and the view
+* Create EmployeeViewModel in the ViewModels Folder
+* Go to the controller and refactor the code
+* But you will need to cast the object from the ViewModel Class to the normal Model Class
+* This is called Maping which is of two types
+    * Manual "time consuming" -- Check Session05 Video 07
+    * Auto "using auto mapper"
+* To use Automapper in the presentation layer, from the dependecies use the nuget package manager to install the automapper
+* Create a folder called mapping and inside a folder for each class
+* Check Session05 and Video08
+* Create ClassProfile for each Class Model and inherit Profile from mapper
+* Create method CreateMap inside the default constructor
+* Modify the contructor of the target controller
+* Modify the Index and Create methods
+* Change the Model type in the Views
+* Modify the edit and delete methods like same
+* Do not forget to allow the dependecy injection for AutoMapper
+
+### Unit of Work: Design Pattern
+* If you need to do multiple injections from several repositories
+* In the Business Logic Layer
+* Create an interface for the Unit Of Work
+* In the interface, inlcude signature for the 
+* Create Class UnitOfWork and inherit the interface then implement it
+* Modify the Employee Controller, let it use the Unit of work instead of the Employee and department repository
+* Do Not Forget the dependency injection

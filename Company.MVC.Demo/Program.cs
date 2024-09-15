@@ -1,6 +1,9 @@
+using Company.MVC.Demo.BLL;
 using Company.MVC.Demo.BLL.Interface;
 using Company.MVC.Demo.BLL.Repository;
 using Company.MVC.Demo.DAL.Data.Context;
+using Company.MVC.Demo.Mapping;
+using Company.MVC.Demo.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.MVC.Demo
@@ -16,8 +19,6 @@ namespace Company.MVC.Demo
 
             // Allow Dependency Injection for AppDbContext
             // builder.Services.AddScoped<AppDbContext>();
-            // there are also AddSingleton and AddTransient
-
             // ASP has a more direct method
             // Same effect as the above code
             // Allow Dependency Injection for AppDbContext
@@ -31,7 +32,18 @@ namespace Company.MVC.Demo
             // To allow dependency injection for the repository
             builder.Services.AddScoped<IDepartmentRepository,DepartmentRepository>();
             builder.Services.AddScoped<IEmployeeRepository,EmployeeRepository>();
-            
+            builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Dependency Injection for AutoMapper
+            // You have to repeat it for each profile Class
+            builder.Services.AddAutoMapper(typeof(EmployeeProfile));
+            // builder.Services.AddAutoMapper(M => M.AddProfile(new EmployeeProfile())); // Same
+
+            // For demonstration Only
+            builder.Services.AddScoped<IScopedService, ScopedService>();
+            builder.Services.AddTransient<ITransientService, TransientService>();
+            builder.Services.AddSingleton<ISingletonService, SingletonService>();
+
 
             var app = builder.Build();
 

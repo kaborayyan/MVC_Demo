@@ -1,6 +1,7 @@
 ﻿using Company.MVC.Demo.BLL.Interface;
 using Company.MVC.Demo.DAL.Data.Context;
 using Company.MVC.Demo.DAL.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +11,16 @@ using System.Threading.Tasks;
 namespace Company.MVC.Demo.BLL.Repository
 {
     public class EmployeeRepository : GenericRepository<Employee>, IEmployeeRepository
-    {        
-        public EmployeeRepository(AppDbContext context):base(context)
-        {            
+    {
+        public EmployeeRepository(AppDbContext context) : base(context)
+        {
+        }
+
+        // Implementation of the search function
+        public IEnumerable<Employee> GetByName(string name)
+        {
+            return _context.Employees.Where(E => E.Name.ToLower().Contains(name.ToLower())).Include(E => E.WorkFor).ToList();
+            // You must use Include() since EF doesn't load navigational properties by default
         }
 
         #region Old Code

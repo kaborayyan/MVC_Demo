@@ -13,7 +13,7 @@ namespace Company.MVC.Demo.DAL.Data.Context
     {
         public AppDbContext(DbContextOptions<AppDbContext>options) : base(options)
         {
-
+            
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

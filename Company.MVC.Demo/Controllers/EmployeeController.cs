@@ -1,25 +1,54 @@
-﻿using Company.MVC.Demo.BLL.Interface;
+﻿using AutoMapper;
+using Company.MVC.Demo.BLL.Interface;
 using Company.MVC.Demo.DAL.Models;
+using Company.MVC.Demo.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.Collections.ObjectModel;
 
 namespace Company.MVC.Demo.Controllers
 {
     public class EmployeeController : Controller
     {
-        private readonly IEmployeeRepository _employeeRepository;
+        //The IUnitOfWork will do the job of the two repositories
 
-        public EmployeeController(IEmployeeRepository employeeRepository)
+        //private readonly IEmployeeRepository _EmployeeRepository;
+        //private readonly IDepartmentRepository _DepartmentRepository;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+
+        public EmployeeController(
+            //IEmployeeRepository employeeRepository,
+            //IDepartmentRepository departmentRepository,
+            IUnitOfWork unitOfwork,
+            IMapper mapper)
         {
-            _employeeRepository = employeeRepository;
+            //_EmployeeRepository = employeeRepository;
+            //_DepartmentRepository = departmentRepository;
+            _unitOfWork = unitOfwork;
+            _mapper = mapper;
         }
 
         #region Index
-        [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string searchInput)
         {
-            // Use GetAll() to get all the employees from the database
-            var Employees = _employeeRepository.GetAll();
-            return View(Employees);
+            var Employees = Enumerable.Empty<Employee>();
+            // var EmployeesViewModel = new Collection<EmployeeViewModel>();
+            // to use the ViewModel if you need
+            if (string.IsNullOrEmpty(searchInput))
+            {
+                // Use GetAll() to get all the employees from the database
+                //Employees = _EmployeeRepository.GetAll();
+                Employees = _unitOfWork.iEmployeeRepository.GetAll();
+            }
+            else
+            {
+                //Employees = _EmployeeRepository.GetByName(searchInput);
+                Employees = _unitOfWork.iEmployeeRepository.GetByName(searchInput);
+            }
+            // Auto mapping
+            var EmployeesViewModel = _mapper.Map<IEnumerable<EmployeeViewModel>>(Employees);
+            return View(EmployeesViewModel);
         }
         #endregion
 
@@ -27,23 +56,30 @@ namespace Company.MVC.Demo.Controllers
         [HttpGet]
         public IActionResult Create()
         {
+            // To enable department selection on the front end
+            //var Departments = _DepartmentRepository.GetAll(); // Extra Data
+            var Departments = _unitOfWork.iDepartmentRepository.GetAll(); // Extra Data
+            ViewData["Departments"] = Departments;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Employee employee)
+        public IActionResult Create(EmployeeViewModel model)
         {
-            if (ModelState.IsValid)            
+            // Auto mapping
+            var employee = _mapper.Map<Employee>(model);
+            if (ModelState.IsValid)
             {
-                var count = _employeeRepository.Add(employee);
+                //var count = _EmployeeRepository.Add(employee);
+                var count = _unitOfWork.iEmployeeRepository.Add(employee);
                 if (count > 0)
                 {
+                    TempData["Message"] = "An Employee was created successfully";
                     return RedirectToAction(nameof(Index));
                 }
             }
             return View(employee);
-
         }
         #endregion
 
@@ -51,7 +87,8 @@ namespace Company.MVC.Demo.Controllers
         public IActionResult Details(int? id, string viewName = "Details")
         {
             if (id == null) return BadRequest();
-            var employee = _employeeRepository.Get(id.Value);
+            //var employee = _EmployeeRepository.Get(id.Value);
+            var employee = _unitOfWork.iEmployeeRepository.Get(id.Value);
             if (employee == null) return NotFound();
             return View(viewName, employee);
         }
@@ -60,21 +97,27 @@ namespace Company.MVC.Demo.Controllers
         #region Edit
         [HttpGet]
         public IActionResult Edit(int? id)
-        {            
+        {
+            //var Departments = _DepartmentRepository.GetAll(); // Extra Data
+            var Departments = _unitOfWork.iDepartmentRepository.GetAll(); // Extra Data
+            ViewData["Departments"] = Departments;
             return Details(id, "Edit");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromRoute] int? id, Employee employee)
-        {            
+        public IActionResult Edit([FromRoute] int? id, EmployeeViewModel model)
+        {
             try
             {
+                // Auto mapping
+                var employee = _mapper.Map<Employee>(model);
                 if (id != employee.Id) return BadRequest();
 
                 if (ModelState.IsValid)
                 {
-                    var count = _employeeRepository.Update(employee);
+                    //var count = _EmployeeRepository.Update(employee);
+                    var count = _unitOfWork.iEmployeeRepository.Update(employee);
                     if (count > 0)
                     {
                         return RedirectToAction(nameof(Index));
@@ -83,10 +126,10 @@ namespace Company.MVC.Demo.Controllers
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);                
+                ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            return View(employee);
+            return View(model);
         }
         #endregion
 
@@ -99,15 +142,18 @@ namespace Company.MVC.Demo.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete([FromRoute] int? id, Employee employee)
+        public IActionResult Delete([FromRoute] int? id, EmployeeViewModel model)
         {
             try
             {
+                // Auto mapping
+                var employee = _mapper.Map<Employee>(model);
                 if (id != employee.Id) return BadRequest();
 
                 if (ModelState.IsValid)
-                {
-                    var count = _employeeRepository.Delete(employee);
+                {                    
+                    //var count = _employeeRepository.Delete(employee);
+                    var count = _unitOfWork.iEmployeeRepository.Delete(employee);
                     if (count > 0)
                     {
                         return RedirectToAction(nameof(Index));
@@ -119,7 +165,7 @@ namespace Company.MVC.Demo.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
             }
 
-            return View(employee);
+            return View(model);
         }
         #endregion
     }
