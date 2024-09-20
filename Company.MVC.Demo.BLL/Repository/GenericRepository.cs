@@ -24,43 +24,43 @@ namespace Company.MVC.Demo.BLL.Repository
         }
 
         // The 5 basic methods
-        public IEnumerable<T> GetAll()
+        public async Task<IEnumerable<T>> GetAllAsync()
         {
             if (typeof(T) == typeof(Employee))
             {
                 // Temporary solution to let EF load the navigation property
-                return (IEnumerable<T>)_context.Employees.Include(E => E.WorkFor).AsNoTracking().ToList();
+                return (IEnumerable<T>)await _context.Employees.Include(E => E.WorkFor).AsNoTracking().ToListAsync();
             }
             else
             {
                 // Set<T>() instead of Department or Employee
-                return _context.Set<T>().ToList();
+                return await _context.Set<T>().ToListAsync();
             }            
         }
 
-        public T Get(int id)
+        public async Task<T> GetAsync(int id)
         {
             // return _context.Departments.FirstOrDefault(D => D.DepartmentId == id);
             // The same as
-            return _context.Set<T>().Find(id);
+            return await _context.Set<T>().FindAsync(id);
         }
 
-        public int Add(T entity)
+        public async Task<int> AddAsync(T entity)
         {
-            _context.Set<T>().Add(entity);
-            return _context.SaveChanges(); // SaveChanges() will return a number
+            await _context.Set<T>().AddAsync(entity);
+            return await _context.SaveChangesAsync(); // SaveChanges() will return a number
         }
 
-        public int Update(T entity)
+        public async Task<int> UpdateAsync(T entity)
         {
             _context.Set<T>().Update(entity);
-            return _context.SaveChanges();
+            return await _context.SaveChangesAsync();
         }
 
-        public int Delete(T entity)
+        public async Task<int> DeleteAsync(T entity)
         {
             _context.Set<T>().Remove(entity);
-            return _context.SaveChanges();
+            return await _context.SaveChangesAsync();
         }
     }
 }

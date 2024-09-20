@@ -230,3 +230,96 @@ builder.Services.AddSingleton
 * Create Class UnitOfWork and inherit the interface then implement it
 * Modify the Employee Controller, let it use the Unit of work instead of the Employee and department repository
 * Do Not Forget the dependency injection
+
+### Adding images to your data base
+* Don't keep images or other files in your data base, this will overload your data base
+* Keep them in a separate folder in your application on the server
+* The recommended folder is the wwwroot
+* You'll keep the path for the file in the database
+* Create a separate folder for the Classes that will deal with files
+* You'll need two methods only Upload and Delete since Update is Upload + Delete
+
+### The Upload Method
+```C#
+public static string UploadFile (IFormFile myFile, string myFolderName) // target saving location we created
+{
+    // 1. Get the path for saving location
+    // string folderPath = Directory.GetCurrentDirectory() + @"wwwroot\files\" + folderName;
+    string myFolderPath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\files\", myFolderName);
+
+    // 2. Get file name and make it unique
+    // the generated Guid will ensure unique name
+    string myFileName = $"{Guid.NewGuid()}{myFile.FileName}";
+
+    // 3. Combine both folderName + file Name = filePath, sequence is relevant
+    string myFilePath = Path.Combine(myFolderPath, myFileName);
+
+    // 4. Save the file
+    // We use what's called a stream = data + time
+    // using to open and close the connection
+    using var fileStream = new FileStream(myFilePath, FileMode.Create);
+    myFile.CopyTo(fileStream); // save the file to the stream
+
+    return myFileName;
+}
+```
+
+### The Delete Method
+```C#
+public static void DeleteFile(string myFileName, string myFolderName)
+{
+    string myFilePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\files\", myFolderName, myFileName);
+    if (File.Exists(myFilePath))
+    {
+        File.Delete(myFilePath);
+    }
+}
+```
+
+### Integrate those methods in the Employee ViewModel and Controller
+* Modify the Model to add a property for the image name
+* Migrate and update the data base
+* Add the ImageName property and a nullable property of type IFormFile to the ViewModel
+* Modify the Create/Edit View "In our project it's the partial view"
+* Modify the Create view add the "enctype" to the form
+* Modify the Create Method in the Controller
+* Modify the Index view to include a place to show the employee image
+* Modify the Delete Action to remove the image from the server bafter deleting the object from the data base
+* Edit the Delete View
+* Edit the Edit Action to check for the presence of an image and delete the old then upload new image
+* Edit the Edit view itself
+
+
+### Synchronous vs Asynchronous Programming
+* Synchronus: Codes "Tasks" are executed one after one, it will take longer time since the times of execution will be added
+* Asynchronus: If the tasks are not related to each other, they can be excuted simulataneously
+* ```async``` must return either of 3: Void Task or Task<T>
+* It will be used mainly with communicating with data base since the communication with data bases is a slow process 
+
+### Include Asychronous Programming in your code
+* Edit your Generic Repository to inculde Asych Methods
+```C#
+Async Task<Data Type>
+await MethodAsync()
+```
+* Then Edit your dependent Repositories and Interfaces to match the Method signatures to new names and return data types
+* Edit your Controllers
+
+### Microsoft Identity Package
+* Install into DAL since it's seen by all other layers
+* Change your AppDbContext to inherit from IdentityDbContext instead of DbContext
+* Create new Class ```ApplicationUser : IdentityUser```
+* Add it to the IdentityDbContext
+
+### Implement in the Presentation Layer
+* Create a Controller that will be responsible for the log in
+* Create a shared layout
+* Copy the html and css codes to their needed folder
+* Transform this view into a shared view
+* You will need two Methods in the Controller one for sign up and another for the sign in
+* Create the httpget method sign up, create its view and let it use the already created auth layout
+* Create a ViewModel and write the needed data annotations
+* Link the View to the ViewModel
+* Edit the view and link each inout to its sepecific property by ```asp-for```
+* Add the sign up Action in the Controller
+* 

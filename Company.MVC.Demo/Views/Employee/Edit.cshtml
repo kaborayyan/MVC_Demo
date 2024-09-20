@@ -7,14 +7,17 @@
 <h1>Edit Employee</h1>
 <br />
 <br />
-<form asp-action="Edit">
+<form asp-action="Edit" enctype="multipart/form-data">
     <div asp-validation-summary="All"></div>
 
     <partial name="PartialViews/CreateEditEmployeePartialView " model="Model"/>
 
     <br />
     <br />
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning" />Edit</a>
+
+    <input asp-for="ImageName" hidden />
+
+    <input type="submit" value="Save" class="btn btn-warning" />
     <a asp-action="Index" class="btn btn-light">Back To List</a>
 </form>
 @section Validation {

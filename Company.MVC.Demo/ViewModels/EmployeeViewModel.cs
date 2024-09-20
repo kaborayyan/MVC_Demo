@@ -30,5 +30,8 @@ namespace Company.MVC.Demo.ViewModels
         public DateTime DateOfCreation { get; set; } = DateTime.Now;
         public int? WorkForId { get; set; } // FK
         public Department? WorkFor { get; set; } // Navigational Property
+
+        public IFormFile? Image {  get; set; } // the file itself
+        public string? ImageName { get; set; } // the file name
     }
 }

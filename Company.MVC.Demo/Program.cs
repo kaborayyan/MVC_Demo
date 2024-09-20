@@ -2,8 +2,10 @@ using Company.MVC.Demo.BLL;
 using Company.MVC.Demo.BLL.Interface;
 using Company.MVC.Demo.BLL.Repository;
 using Company.MVC.Demo.DAL.Data.Context;
+using Company.MVC.Demo.DAL.Models;
 using Company.MVC.Demo.Mapping;
 using Company.MVC.Demo.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Company.MVC.Demo
@@ -33,6 +35,9 @@ namespace Company.MVC.Demo
             builder.Services.AddScoped<IDepartmentRepository,DepartmentRepository>();
             builder.Services.AddScoped<IEmployeeRepository,EmployeeRepository>();
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            // Dependency Injection for security module
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>().AddEntityFrameworkStores<AppDbContext>();
 
             // Dependency Injection for AutoMapper
             // You have to repeat it for each profile Class

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Company.MVC.Demo.BLL.Interface;
 using Company.MVC.Demo.DAL.Models;
+using Company.MVC.Demo.Helpers;
 using Company.MVC.Demo.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -30,7 +31,7 @@ namespace Company.MVC.Demo.Controllers
         }
 
         #region Index
-        public IActionResult Index(string searchInput)
+        public async Task<IActionResult> Index(string searchInput)
         {
             var Employees = Enumerable.Empty<Employee>();
             // var EmployeesViewModel = new Collection<EmployeeViewModel>();
@@ -39,12 +40,12 @@ namespace Company.MVC.Demo.Controllers
             {
                 // Use GetAll() to get all the employees from the database
                 //Employees = _EmployeeRepository.GetAll();
-                Employees = _unitOfWork.iEmployeeRepository.GetAll();
+                Employees = await _unitOfWork.iEmployeeRepository.GetAllAsync();
             }
             else
             {
                 //Employees = _EmployeeRepository.GetByName(searchInput);
-                Employees = _unitOfWork.iEmployeeRepository.GetByName(searchInput);
+                Employees = await _unitOfWork.iEmployeeRepository.GetByNameAsync(searchInput);
             }
             // Auto mapping
             var EmployeesViewModel = _mapper.Map<IEnumerable<EmployeeViewModel>>(Employees);
@@ -54,25 +55,28 @@ namespace Company.MVC.Demo.Controllers
 
         #region Create
         [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             // To enable department selection on the front end
             //var Departments = _DepartmentRepository.GetAll(); // Extra Data
-            var Departments = _unitOfWork.iDepartmentRepository.GetAll(); // Extra Data
+            var Departments = await _unitOfWork.iDepartmentRepository.GetAllAsync(); // Extra Data
             ViewData["Departments"] = Departments;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(EmployeeViewModel model)
+        public async Task<IActionResult> Create(EmployeeViewModel model)
         {
             // Auto mapping
             var employee = _mapper.Map<Employee>(model);
             if (ModelState.IsValid)
             {
+                // to map the uploaded image file
+                model.ImageName = DocumentSettings.UploadFile(model.Image, "images");
+
                 //var count = _EmployeeRepository.Add(employee);
-                var count = _unitOfWork.iEmployeeRepository.Add(employee);
+                var count = await _unitOfWork.iEmployeeRepository.AddAsync(employee);
                 if (count > 0)
                 {
                     TempData["Message"] = "An Employee was created successfully";
@@ -84,11 +88,11 @@ namespace Company.MVC.Demo.Controllers
         #endregion
 
         #region Details
-        public IActionResult Details(int? id, string viewName = "Details")
+        public async Task<IActionResult> Details(int? id, string viewName = "Details")
         {
             if (id == null) return BadRequest();
             //var employee = _EmployeeRepository.Get(id.Value);
-            var employee = _unitOfWork.iEmployeeRepository.Get(id.Value);
+            var employee = await _unitOfWork.iEmployeeRepository.GetAsync(id.Value);
             if (employee == null) return NotFound();
             return View(viewName, employee);
         }
@@ -96,20 +100,27 @@ namespace Company.MVC.Demo.Controllers
 
         #region Edit
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             //var Departments = _DepartmentRepository.GetAll(); // Extra Data
-            var Departments = _unitOfWork.iDepartmentRepository.GetAll(); // Extra Data
+            var Departments = await _unitOfWork.iDepartmentRepository.GetAllAsync(); // Extra Data
             ViewData["Departments"] = Departments;
-            return Details(id, "Edit");
+            return await Details(id, "Edit");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromRoute] int? id, EmployeeViewModel model)
+        public async Task<IActionResult> Edit([FromRoute] int? id, EmployeeViewModel model)
         {
             try
             {
+                // If there's an image delete it then upload new image
+                if (model.ImageName is not null)
+                {
+                    DocumentSettings.DeleteFile(model.ImageName, "images");
+                }
+                model.ImageName = DocumentSettings.UploadFile(model.Image, "images");
+
                 // Auto mapping
                 var employee = _mapper.Map<Employee>(model);
                 if (id != employee.Id) return BadRequest();
@@ -117,7 +128,7 @@ namespace Company.MVC.Demo.Controllers
                 if (ModelState.IsValid)
                 {
                     //var count = _EmployeeRepository.Update(employee);
-                    var count = _unitOfWork.iEmployeeRepository.Update(employee);
+                    var count = await _unitOfWork.iEmployeeRepository.UpdateAsync(employee);
                     if (count > 0)
                     {
                         return RedirectToAction(nameof(Index));
@@ -135,14 +146,14 @@ namespace Company.MVC.Demo.Controllers
 
         #region Delete
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            return Details(id, "Delete");
+            return await Details(id, "Delete");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete([FromRoute] int? id, EmployeeViewModel model)
+        public async Task<IActionResult> Delete([FromRoute] int? id, EmployeeViewModel model)
         {
             try
             {
@@ -151,11 +162,13 @@ namespace Company.MVC.Demo.Controllers
                 if (id != employee.Id) return BadRequest();
 
                 if (ModelState.IsValid)
-                {                    
+                {
                     //var count = _employeeRepository.Delete(employee);
-                    var count = _unitOfWork.iEmployeeRepository.Delete(employee);
+                    var count = await _unitOfWork.iEmployeeRepository.DeleteAsync(employee);
                     if (count > 0)
                     {
+                        // Delete the image from the server after the object has been deleted from the data base
+                        DocumentSettings.DeleteFile(model.ImageName, "images");
                         return RedirectToAction(nameof(Index));
                     }
                 }

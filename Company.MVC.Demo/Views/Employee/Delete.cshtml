@@ -12,7 +12,10 @@
     <partial name="PartialViews/DeleteDetailsEmployeePartialView " model="Model" />
     <br />
     <br />
-    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger" />Delete<a/>
+
+    <input asp-for="ImageName" hidden/>
+
+    <input type="submit" value="Delete" class="btn btn-danger" />
     <a asp-action="Index" class="btn btn-light">Back To List</a>
 </form>
 

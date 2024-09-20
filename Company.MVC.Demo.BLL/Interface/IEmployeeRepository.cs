@@ -21,6 +21,6 @@ namespace Company.MVC.Demo.BLL.Interface
         // However it's better to leave it like this in case you needed to
         // add something special to each repository for example
 
-        IEnumerable<Employee> GetByName(string name); // The search function
+        Task<IEnumerable<Employee>> GetByNameAsync(string name); // The search function
     }
 }

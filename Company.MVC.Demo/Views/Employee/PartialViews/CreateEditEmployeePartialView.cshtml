@@ -1,4 +1,5 @@
-﻿@model Employee
+﻿@using Company.MVC.Demo.ViewModels
+@model EmployeeViewModel
 @{
     var Departments = new SelectList(ViewData["Departments"] as IEnumerable<Department>,nameof(Department.Id), nameof(Department.DepartmentName)); // IEnumerable object, link field, display field
 }
@@ -59,4 +60,8 @@
     <select asp-for="WorkForId" asp-items="Departments" class="form-control">
         <option value="@null">-- Select Department --</option>
     </select>
+</div>
+<div class="form-group">
+    <label asp-for="Image" class="col-form-label"></label>
+    <input type="file" asp-for="Image" class="form-control" />    
 </div>

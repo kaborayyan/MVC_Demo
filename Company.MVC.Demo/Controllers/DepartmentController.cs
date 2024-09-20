@@ -19,10 +19,10 @@ namespace Company.MVC.Demo.Controllers
 
         #region Index
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             // Use GetAll() to get all the departments from the database
-            var Departments = _departmentRepository.GetAll();
+            var Departments = await _departmentRepository.GetAllAsync();
             return View(Departments);
         }
         #endregion
@@ -36,13 +36,13 @@ namespace Company.MVC.Demo.Controllers
 
         // This will work on the submit button
         [HttpPost]
-        public IActionResult Create(Department department) // receive the data from the form
+        public async Task<IActionResult> Create(Department department) // receive the data from the form
         {
             if (ModelState.IsValid)
             // Check the validity of data
             // Display the validation error messages
             {
-                var count = _departmentRepository.Add(department);
+                var count = await _departmentRepository.AddAsync(department);
                 if (count > 0)
                 {
                     return RedirectToAction(nameof(Index)); // or RedirectToAction("Index")
@@ -54,10 +54,10 @@ namespace Company.MVC.Demo.Controllers
         #endregion
 
         #region Details
-        public IActionResult Details(int? id, string viewName = "Details") // Status 100
+        public async Task<IActionResult> Details(int? id, string viewName = "Details") // Status 100
         {
             if (id == null) return BadRequest(); // Status 400
-            var department = _departmentRepository.Get(id.Value);
+            var department = await _departmentRepository.GetAsync(id.Value);
             if (department == null) return NotFound(); // Status 404
             return View(viewName, department);
         }
@@ -65,18 +65,18 @@ namespace Company.MVC.Demo.Controllers
 
         #region Edit
         [HttpGet]
-        public IActionResult Edit(int? id)
+        public async Task<IActionResult> Edit(int? id)
         {
             //if (id == null) return BadRequest();
             //var department = _departmentRepository.Get(id.Value);
             //if (department == null) return NotFound();
             //return View(department);
-            return Details(id,"Edit");
+            return await Details(id,"Edit");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromRoute] int? id, Department department)
+        public async Task<IActionResult> Edit([FromRoute] int? id, Department department)
         {
             // Requesting the entity using id from route ensures no mistakes
             // if someone manipulated the code on the front end
@@ -86,7 +86,7 @@ namespace Company.MVC.Demo.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var count = _departmentRepository.Update(department);
+                    var count = await _departmentRepository.UpdateAsync(department);
                     if (count > 0)
                     {
                         return RedirectToAction(nameof(Index));
@@ -106,18 +106,18 @@ namespace Company.MVC.Demo.Controllers
 
         #region Delete
         [HttpGet]
-        public IActionResult Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
             //if (id == null) return BadRequest();
             //var department = _departmentRepository.Get(id.Value);
             //if (department == null) return NotFound();
             //return View(department);
-            return Details(id, "Delete");
+            return await Details(id, "Delete");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete([FromRoute] int? id, Department department)
+        public async Task<IActionResult> Delete([FromRoute] int? id, Department department)
         {
             try
             {
@@ -125,7 +125,7 @@ namespace Company.MVC.Demo.Controllers
 
                 if (ModelState.IsValid)
                 {
-                    var count = _departmentRepository.Delete(department);
+                    var count = await _departmentRepository.DeleteAsync(department);
                     if (count > 0)
                     {
                         return RedirectToAction(nameof(Index));

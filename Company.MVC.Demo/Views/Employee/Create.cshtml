@@ -6,14 +6,14 @@
 <h1>Create New Employee</h1>
 <br />
 <br />
-<form asp-action="Create">
+<form asp-action="Create" enctype="multipart/form-data">
     <div asp-validation-summary="All"></div>
     
     <partial name="PartialViews/CreateEditEmployeePartialView" model="Model" />
 
     <br />
     <br />
-    <a asp-action="Create" asp-route-id="@Model.Id" class="btn btn-warning" />Create</a>
+    <input type="submit" value="Create" class="btn btn-warning" />
     <a asp-controller="Employee" asp-action="Index" class="btn btn-light">Back To List</a>
 </form>
 @section Validation{
